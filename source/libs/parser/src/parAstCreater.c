@@ -1806,8 +1806,17 @@ SDataType createVarLenDataType(uint8_t type, const SToken* pLen) {
 }
 
 SNode* createCreateTableStmt(SAstCreateContext* pCxt, bool ignoreExists, SNode* pRealTable, SNodeList* pCols,
-                             SNodeList* pTags, SNode* pOptions) {
+                             SNodeList* pTags, SNode* pOptions, SToken* pTbUid) {
   CHECK_PARSER_STATUS(pCxt);
+  tb_uid_t tbUid = 0;
+  if (pTbUid) {
+    tbUid = taosStr2Int64(pTbUid->z, NULL, 10);
+    if (tbUid <= 0) {
+      snprintf(pCxt->pQueryCxt->pMsg, pCxt->pQueryCxt->msgLen, "table uid should larger than 0");
+      pCxt->errCode = TSDB_CODE_PAR_INVALID_TBUID;
+      return NULL;
+    }
+  }
   SCreateTableStmt* pStmt = (SCreateTableStmt*)nodesMakeNode(QUERY_NODE_CREATE_TABLE_STMT);
   CHECK_OUT_OF_MEM(pStmt);
   strcpy(pStmt->dbName, ((SRealTableNode*)pRealTable)->table.dbName);
@@ -1816,6 +1825,7 @@ SNode* createCreateTableStmt(SAstCreateContext* pCxt, bool ignoreExists, SNode* 
   pStmt->pCols = pCols;
   pStmt->pTags = pTags;
   pStmt->pOptions = (STableOptions*)pOptions;
+  pStmt->tbUid = tbUid;
   nodesDestroyNode(pRealTable);
   return (SNode*)pStmt;
 }

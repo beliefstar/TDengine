@@ -197,6 +197,7 @@ typedef struct SCreateTableStmt {
   char           dbName[TSDB_DB_NAME_LEN];
   char           tableName[TSDB_TABLE_NAME_LEN];
   bool           ignoreExists;
+  tb_uid_t       tbUid;
   SNodeList*     pCols;
   SNodeList*     pTags;
   STableOptions* pOptions;

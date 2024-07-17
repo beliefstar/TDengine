@@ -5859,6 +5859,7 @@ static const char* jkCreateTableStmtIgnoreExists = "IgnoreExists";
 static const char* jkCreateTableStmtCols = "Cols";
 static const char* jkCreateTableStmtTags = "Tags";
 static const char* jkCreateTableStmtOptions = "Options";
+static const char* jkCreateTableStmtTableUid = "TableUid";
 
 static int32_t createTableStmtToJson(const void* pObj, SJson* pJson) {
   const SCreateTableStmt* pNode = (const SCreateTableStmt*)pObj;
@@ -5878,6 +5879,9 @@ static int32_t createTableStmtToJson(const void* pObj, SJson* pJson) {
   }
   if (TSDB_CODE_SUCCESS == code) {
     code = tjsonAddObject(pJson, jkCreateTableStmtOptions, nodeToJson, pNode->pOptions);
+  }
+  if (TSDB_CODE_SUCCESS == code) {
+    code = tjsonAddIntegerToObject(pJson, jkCreateTableStmtTableUid, pNode->tbUid);
   }
 
   return code;
@@ -5901,6 +5905,9 @@ static int32_t jsonToCreateTableStmt(const SJson* pJson, void* pObj) {
   }
   if (TSDB_CODE_SUCCESS == code) {
     code = jsonToNodeObject(pJson, jkCreateTableStmtOptions, (SNode**)&pNode->pOptions);
+  }
+  if (TSDB_CODE_SUCCESS == code) {
+    code = tjsonGetBigIntValue(pJson, jkCreateTableStmtTableUid, &pNode->tbUid);
   }
 
   return code;

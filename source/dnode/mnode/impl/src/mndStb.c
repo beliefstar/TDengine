@@ -828,7 +828,7 @@ int32_t mndBuildStbFromReq(SMnode *pMnode, SStbObj *pDst, SMCreateStbReq *pCreat
   pDst->updateTime = pDst->createdTime;
   pDst->uid = (pCreate->source == TD_REQ_FROM_TAOX_OLD || pCreate->source == TD_REQ_FROM_TAOX)
                   ? pCreate->suid
-                  : mndGenerateUid(pCreate->name, TSDB_TABLE_FNAME_LEN);
+                  : (pCreate->suid ? pCreate->suid : mndGenerateUid(pCreate->name, TSDB_TABLE_FNAME_LEN));
   pDst->dbUid = pDb->uid;
   pDst->tagVer = 1;
   pDst->colVer = 1;
